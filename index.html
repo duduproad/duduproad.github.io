@@ -62,13 +62,27 @@
       opacity: 0;
       transition: opacity 0.3s ease;
       background-color: black; /* optional: fills background around image */
+    
+    }
+    #glass {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: contain;
+    image-rendering: pixelated;
+    z-index: 999;
+    opacity: 0;
+    pointer-events: none;
     }
   </style>
 </head>
 <body>
   <div class="card">
-    <h2>1'le 10 arası bir sayı seç</h2>
-    <input type="range" id="slider" min="-999" max="999" value="5"/>
+    <h2>-999'la 999 arası bir sayı seç</h2>
+    <input type="range" id="slider" min="-999" max="999" value="0"/>
     <p><span id="valueText">5</span></p>
     <button id="sendBtn">Send</button>
     <div class="output" id="output"></div>
@@ -76,6 +90,7 @@
 
   <!-- Fullscreen image + sound -->
   <img id="myImage" src="swoon.jpg" alt="Triggered Image">
+  <img id="glass" src="glass.png" alt="nnn">
   <audio id="mySound" src="swoon.mp3"></audio>
 <audio id="67snd" src="67.mp3"></audio>
 
@@ -85,6 +100,7 @@
     const sendBtn = document.getElementById("sendBtn");
     const output = document.getElementById("output");
     const img = document.getElementById("myImage");
+    const gl = document.getElementById("glass");
     const sound = document.getElementById("mySound");
     const so67 = document.getElementById("67snd");
 
@@ -100,18 +116,31 @@
       if (parseInt(slider.value) === -999 && !triggered) {
         triggered = true;
 
-        // Show fullscreen image (pixelated)
+        // Play sound
+
         img.style.display = "block";
         requestAnimationFrame(() => (img.style.opacity = "1"));
 
-        // Play sound
+        // Ses çal
         sound.play();
 
-        // Hide after 1 second
+        // 3 saniye sonra 1. resmi gizle ve 2. resmi göster
         setTimeout(() => {
-          img.style.opacity = "0";
-          setTimeout(() => (img.style.display = "none"), 0);
-        }, 3000);
+            img.style.opacity = "0";
+            setTimeout(() => (img.style.display = "none"), 300); // fade out süresi
+
+            // 2. resmi göster
+            gl.style.display = "block";
+            requestAnimationFrame(() => (gl.style.opacity = "1"));
+
+            // 2. resmi 1 saniye sonra gizle
+            setTimeout(() => {
+                gl.style.opacity = "0";
+                setTimeout(() => (gl.style.display = "none"), 300); // fade out süresi
+            }, 1000000);
+
+        }, 2750);
+
       }
 
      if (parseInt(slider.value) === 67 && !six7) {
@@ -155,4 +184,3 @@ if (parseInt(slider.value) !== 67) {
   </script>
 </body>
 </html>
-
