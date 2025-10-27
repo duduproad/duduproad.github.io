@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Slider Send to Server</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: #f3f4f6;
+      overflow: hidden;
+    }
+    .card {
+      background: #fff;
+      padding: 20px 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      width: 300px;
+      position: relative;
+      z-index: 1;
+    }
+    input[type="range"] {
+      width: 100%;
+      margin: 10px 0;
+    }
+    button {
+      margin-top: 10px;
+      padding: 8px 16px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover {
+      background: #1e4fd8;
+    }
+    .output {
+      margin-top: 15px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #2563eb;
+    }
+    /* Fullscreen pixelated image */
+    #myImage {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: contain; /* or cover depending on your image ratio */
+      image-rendering: pixelated; /* <-- keeps pixels sharp */
+      z-index: 999;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      background-color: black; /* optional: fills background around image */
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>1'le 10 arası bir sayı seç</h2>
+    <input type="range" id="slider" min="1" max="10" value="5"/>
+    <p><span id="valueText">5</span></p>
+    <button id="sendBtn">Send</button>
+    <div class="output" id="output"></div>
+  </div>
+
+  <!-- Fullscreen image + sound -->
+  <img id="myImage" src="swoon.jpg" alt="Triggered Image">
+  <audio id="mySound" src="swoon.mp3"></audio>
+<audio id="67snd" src="67.mp3"></audio>
+
+  <script>
+    const slider = document.getElementById("slider");
+    const valueText = document.getElementById("valueText");
+    const sendBtn = document.getElementById("sendBtn");
+    const output = document.getElementById("output");
+    const img = document.getElementById("myImage");
+    const sound = document.getElementById("mySound");
+    const so67 = document.getElementById("67snd");
+
+
+    let triggered = false;
+    let six7 = false;
+
+    // Update live value display
+    slider.addEventListener("input", () => {
+      valueText.textContent = slider.value;
+
+      // Trigger when slider hits -999
+      if (parseInt(slider.value) === -999 && !triggered) {
+        triggered = true;
+
+        // Show fullscreen image (pixelated)
+        img.style.display = "block";
+        requestAnimationFrame(() => (img.style.opacity = "1"));
+
+        // Play sound
+        sound.play();
+
+        // Hide after 1 second
+        setTimeout(() => {
+          img.style.opacity = "0";
+          setTimeout(() => (img.style.display = "none"), 0);
+        }, 3000);
+      }
+
+     if (parseInt(slider.value) === 67 && !six7) {
+        six7 = true;
+
+
+        // Play sound
+        so67.play();
+
+        // Hide after 1 second
+      }
+
+      // Reset trigger if slider moves away
+      if (parseInt(slider.value) !== -999) {
+        triggered = false;
+      }
+if (parseInt(slider.value) !== 67) {
+        six7 = false;
+      }
+    });
+
+    // Send value to server
+    sendBtn.addEventListener("click", async () => {
+      const value = slider.value;
+      output.textContent = "Sending...";
+
+      try {
+        const response = await fetch("http://localhost:3000/send", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ value }),
+        });
+
+        const data = await response.json();
+        output.textContent = "Server says: " + data.message;
+      } catch (error) {
+        output.textContent = "Error sending to server 😢";
+        console.error(error);
+      }
+    });
+  </script>
+</body>
+</html>
